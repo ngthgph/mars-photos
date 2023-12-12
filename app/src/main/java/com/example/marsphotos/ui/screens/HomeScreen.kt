@@ -30,6 +30,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
@@ -51,6 +52,7 @@ import com.example.marsphotos.ui.theme.MarsPhotosTheme
 @Composable
 fun HomeScreen(
     marsUiState: MarsUiState,
+    retryAction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     when(marsUiState) {
@@ -58,7 +60,7 @@ fun HomeScreen(
         is MarsUiState.Success -> PhotosGridScreen(
             photos = marsUiState.photos, modifier = modifier
         )
-        is MarsUiState.Error -> ErrorScreen()
+        is MarsUiState.Error -> ErrorScreen(retryAction = retryAction)
     }
 
 }
@@ -73,7 +75,8 @@ fun PhotosGridScreen(photos: List<MarsPhoto>, modifier: Modifier = Modifier) {
         items(photos, key = {photo -> photo.id}) {
             MarsPhotosCard(
                 photo = it,
-                modifier = modifier.padding(4.dp)
+                modifier = modifier
+                    .padding(4.dp)
                     .fillMaxWidth()
                     .aspectRatio(1.5f)
             )
@@ -127,6 +130,7 @@ fun LoadingScreen(
 
 @Composable
 fun ErrorScreen(
+    retryAction: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -141,6 +145,9 @@ fun ErrorScreen(
             text = stringResource(id = R.string.loading_failed),
             modifier = Modifier.padding(16.dp)
         )
+        Button(onClick = retryAction) {
+            Text(text = stringResource(id = R.string.retry))
+        }
     }
 }
 
@@ -171,6 +178,6 @@ fun LoadingScreenPreview() {
 @Composable
 fun ErrorScreenPreview() {
     MarsPhotosTheme {
-        ErrorScreen()
+        ErrorScreen({})
     }
 }
